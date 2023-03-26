@@ -1,0 +1,30 @@
+{
+    "name": "marmotte/router",
+    "description": "Main Router of Marmotte",
+    "type": "library",
+    "keywords": [
+        "marmotte",
+        "framework",
+        "router"
+    ],
+    "homepage": "https://github.com/Marmotte-framework/Router",
+    "license": "MIT",
+    "funding": [
+        {
+            "type": "patreon",
+            "url": "https://www.patreon.com/gashmob"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Marmotte\\Router\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Kevin Traini",
+            "email": "kevin@ktraini.com"
+        }
+    ],
+    "require": {}
+}

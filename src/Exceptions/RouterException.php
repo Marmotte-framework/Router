@@ -23,10 +23,12 @@
  * SOFTWARE.
  */
 
-namespace Marmotte\Router;
+declare(strict_types=1);
 
-use Marmotte\Brick\Brick;
+namespace Marmotte\Router\Exceptions;
 
-class RouterBrick implements Brick
+use Exception;
+
+final class RouterException extends Exception
 {
 }

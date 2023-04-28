@@ -152,16 +152,16 @@
         },
         {
             "name": "marmotte/brick",
-            "version": "v1.2.0",
+            "version": "v1.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Marmotte-framework/Brick.git",
-                "reference": "5e132efbb70834eff09908d76374a9942009d182"
+                "reference": "c743e890bb86ad541ff48d39bef53f8db895eeea"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Marmotte-framework/Brick/zipball/5e132efbb70834eff09908d76374a9942009d182",
-                "reference": "5e132efbb70834eff09908d76374a9942009d182",
+                "url": "https://api.github.com/repos/Marmotte-framework/Brick/zipball/c743e890bb86ad541ff48d39bef53f8db895eeea",
+                "reference": "c743e890bb86ad541ff48d39bef53f8db895eeea",
                 "shasum": ""
             },
             "require": {
@@ -201,7 +201,7 @@
             ],
             "support": {
                 "issues": "https://github.com/Marmotte-framework/Brick/issues",
-                "source": "https://github.com/Marmotte-framework/Brick/tree/v1.2.0"
+                "source": "https://github.com/Marmotte-framework/Brick/tree/v1.2.1"
             },
             "funding": [
                 {
@@ -209,7 +209,7 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2023-04-22T07:58:06+00:00"
+            "time": "2023-04-28T16:58:55+00:00"
         },
         {
             "name": "symfony/finder",

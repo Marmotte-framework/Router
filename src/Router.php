@@ -79,6 +79,11 @@ final class Router
     // _.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-.
 
     /**
+     * @var RouteNode[]
+     */
+    private array $route_tree = [];
+
+    /**
      * @param class-string $class
      * @throws RouterException
      */

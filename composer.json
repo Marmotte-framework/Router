@@ -27,7 +27,7 @@
     },
     "require-dev": {
         "vimeo/psalm": "^5.8",
-        "symfony/phpunit-bridge": "^6.2"
+        "phpunit/phpunit": "^10.1"
     },
     "autoload": {
         "psr-4": {
@@ -41,6 +41,6 @@
     },
     "scripts": {
         "psalm": "psalm",
-        "test": "simple-phpunit tests"
+        "test": "phpunit"
     }
 }

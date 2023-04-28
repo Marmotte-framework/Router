@@ -43,7 +43,7 @@ class LoadBrickTest extends TestCase
             new CacheManager(mode: Mode::TEST)
         );
         $brick_loader->loadFromDir(__DIR__ . '/../src');
-        $service_manager = $brick_manager->initialize(__DIR__ . '/../src', __DIR__ . '/../src');
+        $_service_manager = $brick_manager->initialize(__DIR__ . '/../src', __DIR__ . '/../src');
 
         $bricks = $brick_manager->getBricks();
         self::assertCount(1, $bricks);

@@ -152,16 +152,16 @@
         },
         {
             "name": "marmotte/brick",
-            "version": "v1.0.0",
+            "version": "v1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Marmotte-framework/Brick.git",
-                "reference": "03b9293e1266a186d763052890c43ffbca9d66ea"
+                "reference": "5e132efbb70834eff09908d76374a9942009d182"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Marmotte-framework/Brick/zipball/03b9293e1266a186d763052890c43ffbca9d66ea",
-                "reference": "03b9293e1266a186d763052890c43ffbca9d66ea",
+                "url": "https://api.github.com/repos/Marmotte-framework/Brick/zipball/5e132efbb70834eff09908d76374a9942009d182",
+                "reference": "5e132efbb70834eff09908d76374a9942009d182",
                 "shasum": ""
             },
             "require": {
@@ -170,14 +170,17 @@
                 "symfony/yaml": "^6.2"
             },
             "require-dev": {
-                "symfony/phpunit-bridge": "^6.2",
+                "phpunit/phpunit": "^10",
                 "vimeo/psalm": "^5.8"
             },
             "type": "library",
             "autoload": {
                 "psr-4": {
                     "Marmotte\\Brick\\": "src/"
-                }
+                },
+                "classmap": [
+                    "src/"
+                ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -189,14 +192,16 @@
                     "email": "kevin@ktraini.com"
                 }
             ],
-            "description": "Brick of Marmot framework",
-            "homepage": "https://github.com/Marmot-framework/Brick",
+            "description": "Brick of Marmotte framework",
+            "homepage": "https://github.com/Marmotte-framework/Brick",
             "keywords": [
-                "marmot"
+                "brick",
+                "framework",
+                "marmotte"
             ],
             "support": {
                 "issues": "https://github.com/Marmotte-framework/Brick/issues",
-                "source": "https://github.com/Marmotte-framework/Brick/tree/v1.0.0"
+                "source": "https://github.com/Marmotte-framework/Brick/tree/v1.2.0"
             },
             "funding": [
                 {
@@ -204,7 +209,7 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2023-03-25T16:23:59+00:00"
+            "time": "2023-04-22T07:58:06+00:00"
         },
         {
             "name": "symfony/finder",
@@ -2437,5 +2442,5 @@
         "php": ">=8.1"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.2.0"
 }

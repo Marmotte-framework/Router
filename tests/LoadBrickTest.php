@@ -51,5 +51,6 @@ class LoadBrickTest extends TestCase
         self::assertSame(RouterBrick::class, $brick->brick->getName());
 
         self::assertTrue($service_manager->hasService(Router::class));
+        self::assertTrue($service_manager->hasService(Emitter::class));
     }
 }

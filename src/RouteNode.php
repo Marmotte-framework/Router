@@ -29,6 +29,14 @@ namespace Marmotte\Router;
 
 final class RouteNode
 {
+    private const VARIABLE_ROUTE = '/^\{.*}$/';
+
+    public readonly bool $is_variable;
+    /**
+     * @var RouteNode[]
+     */
+    public array $variable_sub_routes;
+
     /**
      * @param array<string, RouteNode> $sub_routes
      * @param class-string|null        $class
@@ -39,43 +47,90 @@ final class RouteNode
         public ?string         $class = null,
         public ?string         $method = null,
     ) {
-    }
-
-    public function addSubRoute(RouteNode $sub_route): bool
-    {
-        if ($this->hasSubRoute($sub_route->route)) {
-            return false;
-        }
-
-        $this->sub_routes[$sub_route->route] = $sub_route;
-
-        return true;
-    }
-
-    public function hasSubRoute(string $route): bool
-    {
-        return array_key_exists($route, $this->sub_routes);
-    }
-
-    public function getSubRoute(string $route): ?RouteNode
-    {
-        return $this->sub_routes[$route] ?? null;
-    }
-
-    public function hasHandler(): bool
-    {
-        return $this->class !== null && $this->method !== null;
+        $this->is_variable         = preg_match(self::VARIABLE_ROUTE, $this->route) === 1;
+        $this->variable_sub_routes = [];
     }
 
     /**
-     * @return ?array{class-string, string}
+     * @param string[] $path
      */
-    public function getHandler(): ?array
+    public function addSubRoute(array $path, RouteNode $new_route): bool
     {
-        if ($this->class !== null && $this->method !== null) {
-            return [$this->class, $this->method];
+        if (empty($path)) {
+            if ($new_route->is_variable) {
+                $this->variable_sub_routes[] = $new_route;
+                return true;
+            } else if (!array_key_exists($new_route->route, $this->sub_routes)) {
+                $this->sub_routes[$new_route->route] = $new_route;
+                return true;
+            }
+            return false;
         }
 
+        $route = array_shift($path);
+
+        if (preg_match(self::VARIABLE_ROUTE, $route) === 1) {
+            foreach ($this->variable_sub_routes as $sub_route) {
+                if ($sub_route->addSubRoute($path, $new_route)) {
+                    return true;
+                }
+            }
+
+            return false;
+        } else {
+            if (array_key_exists($route, $this->sub_routes)) {
+                return $this->sub_routes[$route]->addSubRoute($path, $new_route);
+            } else {
+                $route_node               = new RouteNode($route);
+                $this->sub_routes[$route] = $route_node;
+
+                return $route_node->addSubRoute($path, $new_route);
+            }
+        }
+    }
+
+    /**
+     * @param string[]              $routes
+     * @param array<string, string> $args
+     * @return ?array{
+     *     class: class-string,
+     *     method: string,
+     *     args: array<string, string>
+     * }
+     */
+    public function findHandler(array $routes, array $args = []): ?array
+    {
+        if (empty($routes)) {
+            if ($this->class !== null && $this->method !== null) {
+                return [
+                    'class'  => $this->class,
+                    'method' => $this->method,
+                    'args'   => $args,
+                ];
+            } else {
+                return null;
+            }
+        }
+
+        $route = array_shift($routes);
+
+        // Look if static routes match
+        if (array_key_exists($route, $this->sub_routes)) {
+            return $this->sub_routes[$route]->findHandler($routes, $args);
+        }
+
+        // Else, look if variable routes match
+        foreach ($this->variable_sub_routes as $sub_route) {
+            $route_name = substr($sub_route->route, 1, strlen($sub_route->route) - 2);
+            if (($handler = $sub_route->findHandler($routes, [
+                    ...$args,
+                    $route_name => $route,
+                ])) !== null) {
+                return $handler;
+            }
+        }
+
+        // No route found
         return null;
     }
 }

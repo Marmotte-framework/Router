@@ -36,9 +36,13 @@ use RuntimeException;
 #[Service]
 final class Router
 {
+    private RouteNode $route_tree;
+
     public function __construct(
         private readonly RouterConfig $config,
     ) {
+        $this->route_tree = new RouteNode('');
+
         $classmap = ClassMapGenerator::createMap($this->config->controller_root);
 
         foreach ($classmap as $symbol => $_path) {
@@ -77,11 +81,6 @@ final class Router
     // _.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-.
 
     /**
-     * @var array<string, RouteNode>
-     */
-    private array $route_tree = [];
-
-    /**
      * @param class-string $class
      * @throws RouterException
      */
@@ -92,6 +91,14 @@ final class Router
             throw new RouterException(sprintf('class or method don\'t exist: %s::%s', $class, $method));
         }
 
-        $_components = array_filter(explode('/', $route), fn($str) => !empty($str));
+        $components = array_filter(explode('/', $route), fn($str) => !empty($str));
+        if (empty($components)) {
+            throw new RouterException(sprintf('Route %s is not valid', $route));
+        }
+
+        $route_node = new RouteNode(array_pop($components));
+        if (!$this->route_tree->addSubRoute($components, $route_node)) {
+            throw new RouterException(sprintf('Fail to add route %s', $route));
+        }
     }
 }

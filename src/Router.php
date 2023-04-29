@@ -29,8 +29,12 @@ namespace Marmotte\Router;
 
 use Composer\ClassMapGenerator\ClassMapGenerator;
 use Marmotte\Brick\Services\Service;
+use Marmotte\Brick\Services\ServiceManager;
 use Marmotte\Router\Exceptions\RouterException;
+use Psr\Http\Message\ResponseInterface;
 use ReflectionClass;
+use ReflectionMethod;
+use ReflectionNamedType;
 use RuntimeException;
 
 #[Service]
@@ -39,7 +43,9 @@ final class Router
     private RouteNode $route_tree;
 
     public function __construct(
-        private readonly RouterConfig $config,
+        private readonly RouterConfig   $config,
+        private readonly ServiceManager $service_manager,
+        private readonly Emitter        $emitter,
     ) {
         $this->route_tree = new RouteNode('');
 
@@ -104,6 +110,7 @@ final class Router
 
     /**
      * Call handler for route $route
+     * @throws RouterException
      */
     public function route(string $route): void
     {
@@ -115,6 +122,72 @@ final class Router
             return;
         }
 
-        // TODO: call handler
+        $controller_name = $handler['class'];
+        $controller_ref  = new ReflectionClass($controller_name);
+        $controller      = $this->initController($controller_ref, $handler['args']);
+        if ($controller === null) {
+            throw new RouterException(sprintf('Fail to construct class %s', $controller_name));
+        }
+
+        $method_ref = $controller_ref->getMethod($handler['method']);
+        $args       = $this->getArgsForMethod($method_ref, $handler['args']);
+        if ($args === null) {
+            throw new RouterException(sprintf('Fail to get args of method %s::%s', $controller_name, $handler['method']));
+        }
+
+        $response = $method_ref->invoke($controller, $args);
+        if (!$response instanceof ResponseInterface) {
+            throw new RouterException(sprintf('Route %s not returns a Response', $route));
+        }
+
+        $this->emitter->emit($response);
+    }
+
+    /**
+     * @param array<string, string> $route_args
+     */
+    private function initController(ReflectionClass $class, array $route_args): ?object
+    {
+        $constructor = $class->getConstructor();
+        if ($constructor === null) {
+            return $class->newInstance();
+        }
+
+        $args = $this->getArgsForMethod($constructor, $route_args);
+        if ($args === null) {
+            return null;
+        }
+
+        return $class->newInstance($args);
+    }
+
+    /**
+     * @param array<string, string> $route_args
+     */
+    private function getArgsForMethod(ReflectionMethod $method, array $route_args): ?array
+    {
+        $parameters = $method->getParameters();
+        $args       = [];
+        foreach ($parameters as $parameter) {
+            if ($parameter->hasType()) {
+                $type = $parameter->getType();
+                assert($type instanceof ReflectionNamedType);
+                /** @var class-string $name */
+                $name = $type->getName();
+                if ($this->service_manager->hasService($name)) {
+                    $args[] = $this->service_manager->getService($name);
+                    continue;
+                }
+            }
+
+            if (array_key_exists($parameter->getName(), $route_args)) {
+                $args[] = $route_args[$parameter->getName()];
+                continue;
+            }
+
+            return null;
+        }
+
+        return $args;
     }
 }

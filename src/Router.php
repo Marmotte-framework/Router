@@ -101,4 +101,20 @@ final class Router
             throw new RouterException(sprintf('Fail to add route %s', $route));
         }
     }
+
+    /**
+     * Call handler for route $route
+     */
+    public function route(string $route): void
+    {
+        $components = array_filter(explode('/', $route), fn($str) => !empty($str));
+        $handler    = $this->route_tree->findHandler($components);
+
+        if ($handler === null) {
+            // TODO: 404
+            return;
+        }
+
+        // TODO: call handler
+    }
 }

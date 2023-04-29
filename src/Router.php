@@ -67,10 +67,8 @@ final class Router
 
                 try {
                     $this->addRouteHandler($base_route . '/' . $method_route, $class->getName(), $method->getName());
-                } catch (RouterException) {
-                    throw new RuntimeException(
-                        sprintf('A previously found class or method was not found: %s::%s', $class->getName(), $method->getName())
-                    );
+                } catch (RouterException $e) {
+                    throw new RuntimeException(previous: $e);
                 }
             }
         }
@@ -79,7 +77,7 @@ final class Router
     // _.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-.
 
     /**
-     * @var RouteNode[]
+     * @var array<string, RouteNode>
      */
     private array $route_tree = [];
 
@@ -91,7 +89,7 @@ final class Router
     {
         // Check that $class and $methods exists
         if (!class_exists($class) || !method_exists($class, $method)) {
-            throw new RouterException();
+            throw new RouterException(sprintf('class or method don\'t exist: %s::%s', $class, $method));
         }
 
         $_components = array_filter(explode('/', $route), fn($str) => !empty($str));

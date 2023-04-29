@@ -25,7 +25,7 @@
 
 declare(strict_types=1);
 
-namespace Marmotte\Router;
+namespace Marmotte\Router\Router;
 
 use Composer\ClassMapGenerator\ClassMapGenerator;
 use Marmotte\Brick\Services\Service;

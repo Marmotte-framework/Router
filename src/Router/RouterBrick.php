@@ -23,44 +23,10 @@
  * SOFTWARE.
  */
 
-declare(strict_types=1);
+namespace Marmotte\Router\Router;
 
-namespace Marmotte\Router;
+use Marmotte\Brick\Brick;
 
-use Marmotte\Brick\Config\ServiceConfig;
-
-final class RouterConfig extends ServiceConfig
+class RouterBrick implements Brick
 {
-    public function __construct(
-        public readonly string $controller_root,
-    ) {
-
-    }
-
-    public static function fromArray(array $array): ServiceConfig
-    {
-        $defaults = self::defaultArray();
-
-        if (isset($array['controller_root']) && is_string($array['controller_root'])) {
-            $controller_root = $array['controller_root'];
-        } else {
-            $controller_root = $defaults['controller_root'];
-        }
-
-        return new RouterConfig(
-            $controller_root
-        );
-    }
-
-    /**
-     * @return array{
-     *     controller_root: string
-     * }
-     */
-    public static function defaultArray(): array
-    {
-        return [
-            'controller_root' => 'src',
-        ];
-    }
 }

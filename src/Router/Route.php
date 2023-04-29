@@ -23,10 +23,18 @@
  * SOFTWARE.
  */
 
-namespace Marmotte\Router;
+declare(strict_types=1);
 
-use Marmotte\Brick\Brick;
+namespace Marmotte\Router\Router;
 
-class RouterBrick implements Brick
+use Attribute;
+
+#[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_METHOD)]
+final class Route
 {
+    public function __construct(
+        public readonly string $route,
+        public readonly string $name = '',
+    ) {
+    }
 }

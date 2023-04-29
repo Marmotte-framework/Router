@@ -31,6 +31,9 @@ use Marmotte\Brick\Bricks\BrickLoader;
 use Marmotte\Brick\Bricks\BrickManager;
 use Marmotte\Brick\Cache\CacheManager;
 use Marmotte\Brick\Mode;
+use Marmotte\Router\Router\Emitter;
+use Marmotte\Router\Router\Router;
+use Marmotte\Router\Router\RouterBrick;
 use PHPUnit\Framework\TestCase;
 
 class LoadBrickTest extends TestCase

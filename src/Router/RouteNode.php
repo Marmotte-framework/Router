@@ -25,7 +25,7 @@
 
 declare(strict_types=1);
 
-namespace Marmotte\Router;
+namespace Marmotte\Router\Router;
 
 final class RouteNode
 {

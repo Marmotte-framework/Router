@@ -25,7 +25,7 @@
 
 declare(strict_types=1);
 
-namespace Marmotte\Router;
+namespace Marmotte\Router\Router;
 
 use Marmotte\Brick\Services\Service;
 use Psr\Http\Message\ResponseInterface;

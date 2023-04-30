@@ -9,22 +9,39 @@
     ],
     "homepage": "https://github.com/Marmotte-framework/Router",
     "license": "MIT",
-    "funding": [
-        {
-            "type": "patreon",
-            "url": "https://www.patreon.com/gashmob"
-        }
-    ],
-    "autoload": {
-        "psr-4": {
-            "Marmotte\\Router\\": "src/"
-        }
-    },
     "authors": [
         {
             "name": "Kevin Traini",
             "email": "kevin@ktraini.com"
         }
     ],
-    "require": {}
+    "funding": [
+        {
+            "type": "patreon",
+            "url": "https://www.patreon.com/gashmob"
+        }
+    ],
+    "require": {
+        "php": ">=8.1",
+        "marmotte/brick": "^1.2",
+        "marmotte/http": "^1.1"
+    },
+    "require-dev": {
+        "vimeo/psalm": "^5.8",
+        "phpunit/phpunit": "^10.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Marmotte\\Router\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Marmotte\\Router\\": "tests/"
+        }
+    },
+    "scripts": {
+        "psalm": "psalm --no-cache",
+        "test": "phpunit"
+    }
 }

@@ -152,16 +152,16 @@
         },
         {
             "name": "marmotte/brick",
-            "version": "v1.2.1",
+            "version": "v1.2.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Marmotte-framework/Brick.git",
-                "reference": "c743e890bb86ad541ff48d39bef53f8db895eeea"
+                "reference": "767bf5f8444494a62f3b6d074fab99a21ccce009"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Marmotte-framework/Brick/zipball/c743e890bb86ad541ff48d39bef53f8db895eeea",
-                "reference": "c743e890bb86ad541ff48d39bef53f8db895eeea",
+                "url": "https://api.github.com/repos/Marmotte-framework/Brick/zipball/767bf5f8444494a62f3b6d074fab99a21ccce009",
+                "reference": "767bf5f8444494a62f3b6d074fab99a21ccce009",
                 "shasum": ""
             },
             "require": {
@@ -178,8 +178,8 @@
                 "psr-4": {
                     "Marmotte\\Brick\\": "src/"
                 },
-                "classmap": [
-                    "src/"
+                "exclude-from-classmap": [
+                    "tests/"
                 ]
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -201,7 +201,7 @@
             ],
             "support": {
                 "issues": "https://github.com/Marmotte-framework/Brick/issues",
-                "source": "https://github.com/Marmotte-framework/Brick/tree/v1.2.1"
+                "source": "https://github.com/Marmotte-framework/Brick/tree/v1.2.3"
             },
             "funding": [
                 {
@@ -209,20 +209,20 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2023-04-28T16:58:55+00:00"
+            "time": "2023-04-30T12:39:42+00:00"
         },
         {
             "name": "marmotte/http",
-            "version": "v1.1.1",
+            "version": "v1.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Marmotte-framework/Http.git",
-                "reference": "e2e80403322645ee23bbd5d47b15c274b0fc1169"
+                "reference": "6f9e3d2efad68a1ee6a17afb02733ded1977be74"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Marmotte-framework/Http/zipball/e2e80403322645ee23bbd5d47b15c274b0fc1169",
-                "reference": "e2e80403322645ee23bbd5d47b15c274b0fc1169",
+                "url": "https://api.github.com/repos/Marmotte-framework/Http/zipball/6f9e3d2efad68a1ee6a17afb02733ded1977be74",
+                "reference": "6f9e3d2efad68a1ee6a17afb02733ded1977be74",
                 "shasum": ""
             },
             "require": {
@@ -241,8 +241,8 @@
                 "psr-4": {
                     "Marmotte\\Http\\": "src/"
                 },
-                "classmap": [
-                    "src/"
+                "exclude-from-classmap": [
+                    "tests/"
                 ]
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -264,7 +264,7 @@
             ],
             "support": {
                 "issues": "https://github.com/Marmotte-framework/Http/issues",
-                "source": "https://github.com/Marmotte-framework/Http/tree/v1.1.1"
+                "source": "https://github.com/Marmotte-framework/Http/tree/v1.1.3"
             },
             "funding": [
                 {
@@ -272,7 +272,7 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2023-04-27T20:21:26+00:00"
+            "time": "2023-04-30T12:45:12+00:00"
         },
         {
             "name": "psr/http-factory",

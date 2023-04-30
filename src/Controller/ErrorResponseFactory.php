@@ -25,35 +25,42 @@
 
 declare(strict_types=1);
 
-namespace Marmotte\Router;
+namespace Marmotte\Router\Controller;
 
-use Marmotte\Brick\Bricks\BrickLoader;
-use Marmotte\Brick\Bricks\BrickManager;
-use Marmotte\Brick\Cache\CacheManager;
-use Marmotte\Brick\Mode;
-use Marmotte\Router\Controller\ErrorResponseFactory;
-use Marmotte\Router\Router\Emitter;
-use Marmotte\Router\Router\Router;
-use PHPUnit\Framework\TestCase;
+use Marmotte\Brick\Services\Service;
+use Marmotte\Http\Response\ResponseFactory;
+use Marmotte\Http\Stream\StreamFactory;
+use Psr\Http\Message\ResponseInterface;
 
-class LoadBrickTest extends TestCase
+#[Service]
+final class ErrorResponseFactory
 {
-    public function testBrickCanBeLoaded(): void
+    public function __construct(
+        private readonly ResponseFactory $response_factory,
+        private readonly StreamFactory   $stream_factory,
+    ) {
+    }
+
+    public function createError(int $code, string $reason = ''): ResponseInterface
     {
-        $brick_manager = new BrickManager();
-        $brick_loader = new BrickLoader(
-            $brick_manager,
-            new CacheManager(mode: Mode::TEST)
-        );
-        $brick_loader->loadFromDir(__DIR__ . '/../src');
-        $brick_loader->loadBricks();
-        $service_manager = $brick_manager->initialize(__DIR__ . '/../src', __DIR__ . '/Fixtures');
+        $response = $this->response_factory->createResponse($code, $reason);
 
-        $bricks = $brick_manager->getBricks();
-        self::assertCount(2, $bricks);
+        ob_start();
 
-        self::assertTrue($service_manager->hasService(Router::class));
-        self::assertTrue($service_manager->hasService(Emitter::class));
-        self::assertTrue($service_manager->hasService(ErrorResponseFactory::class));
+        echo "<!DOCTYPE html>
+<html lang='en'>
+<head>
+<title>Error $code</title>
+</head>
+<body>
+<h1>Sorry, there is an error $code</h1>
+<h3>{$response->getReasonPhrase()}</h3>
+</body>
+</html>
+";
+        
+        $output = ob_get_clean();
+
+        return $response->withBody($this->stream_factory->createStream($output));
     }
 }

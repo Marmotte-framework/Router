@@ -58,7 +58,7 @@ final class ErrorResponseFactory
 </body>
 </html>
 ";
-        
+
         $output = ob_get_clean();
 
         return $response->withBody($this->stream_factory->createStream($output));

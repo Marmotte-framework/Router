@@ -30,6 +30,7 @@ namespace Marmotte\Router\Router;
 use Composer\ClassMapGenerator\ClassMapGenerator;
 use Marmotte\Brick\Services\Service;
 use Marmotte\Brick\Services\ServiceManager;
+use Marmotte\Router\Controller\ErrorResponseFactory;
 use Marmotte\Router\Exceptions\RouterException;
 use Psr\Http\Message\ResponseInterface;
 use ReflectionClass;
@@ -43,9 +44,10 @@ final class Router
     private RouteNode $route_tree;
 
     public function __construct(
-        private readonly RouterConfig   $config,
-        private readonly ServiceManager $service_manager,
-        private readonly Emitter        $emitter,
+        private readonly RouterConfig         $config,
+        private readonly ServiceManager       $service_manager,
+        private readonly Emitter              $emitter,
+        private readonly ErrorResponseFactory $error_response_factory,
     ) {
         $this->route_tree = new RouteNode('');
 
@@ -118,7 +120,9 @@ final class Router
         $handler    = $this->route_tree->findHandler($components);
 
         if ($handler === null) {
-            // TODO: 404
+            $this->emitter->emit(
+                $this->error_response_factory->createError(404)
+            );
             return;
         }
 

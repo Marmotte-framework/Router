@@ -36,8 +36,7 @@ use Psr\Http\Message\ResponseInterface;
 final class ErrorResponseFactory
 {
     public function __construct(
-        private readonly ResponseFactory $response_factory,
-        private readonly StreamFactory   $stream_factory,
+        private readonly ResponseFactory $response_factory
     ) {
     }
 
@@ -61,6 +60,6 @@ final class ErrorResponseFactory
 
         $output = ob_get_clean();
 
-        return $response->withBody($this->stream_factory->createStream($output));
+        return $response->withBody((new StreamFactory())->createStream($output));
     }
 }

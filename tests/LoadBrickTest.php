@@ -31,6 +31,8 @@ use Marmotte\Brick\Bricks\BrickLoader;
 use Marmotte\Brick\Bricks\BrickManager;
 use Marmotte\Brick\Cache\CacheManager;
 use Marmotte\Brick\Mode;
+use Marmotte\Http\Request\ServerRequest;
+use Marmotte\Http\Response\ResponseFactory;
 use Marmotte\Router\Controller\ErrorResponseFactory;
 use Marmotte\Router\Router\Emitter;
 use Marmotte\Router\Router\Router;
@@ -41,7 +43,7 @@ class LoadBrickTest extends TestCase
     public function testBrickCanBeLoaded(): void
     {
         $brick_manager = new BrickManager();
-        $brick_loader = new BrickLoader(
+        $brick_loader  = new BrickLoader(
             $brick_manager,
             new CacheManager(mode: Mode::TEST)
         );
@@ -55,5 +57,8 @@ class LoadBrickTest extends TestCase
         self::assertTrue($service_manager->hasService(Router::class));
         self::assertTrue($service_manager->hasService(Emitter::class));
         self::assertTrue($service_manager->hasService(ErrorResponseFactory::class));
+
+        self::assertTrue($service_manager->hasService(ServerRequest::class));
+        self::assertTrue($service_manager->hasService(ResponseFactory::class));
     }
 }

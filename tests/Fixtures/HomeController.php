@@ -25,37 +25,49 @@
 
 declare(strict_types=1);
 
-namespace Marmotte\Router\Controller;
+namespace Marmotte\Router\Fixtures;
 
-use Marmotte\Brick\Services\Service;
 use Marmotte\Http\Response\ResponseFactory;
 use Marmotte\Http\Stream\StreamFactory;
+use Marmotte\Router\Router\Route;
 use Psr\Http\Message\ResponseInterface;
 
-#[Service]
-final class ErrorResponseFactory
+final class HomeController
 {
     public function __construct(
-        private readonly ResponseFactory $response_factory,
+        private readonly ResponseFactory $factory,
     ) {
     }
 
-    public function createError(int $code, string $reason = ''): ResponseInterface
+    #[Route('/')]
+    public function home(): ResponseInterface
     {
-        $response = $this->response_factory->createResponse($code, $reason);
+        return $this->factory->createResponse()->withBody(
+            (new StreamFactory())->createStream(__FUNCTION__)
+        );
+    }
 
-        $body = "<!DOCTYPE html>
-<html lang='en'>
-<head>
-<title>Error $code</title>
-</head>
-<body>
-<h1>Sorry, there is an error $code</h1>
-<h3>{$response->getReasonPhrase()}</h3>
-</body>
-</html>
-";
+    #[Route('/contact')]
+    public function contact(): ResponseInterface
+    {
+        return $this->factory->createResponse()->withBody(
+            (new StreamFactory())->createStream(__FUNCTION__)
+        );
+    }
 
-        return $response->withBody((new StreamFactory())->createStream($body));
+    #[Route('about')]
+    public function about(): ResponseInterface
+    {
+        return $this->factory->createResponse()->withBody(
+            (new StreamFactory())->createStream(__FUNCTION__)
+        );
+    }
+
+    #[Route('/map/')]
+    public function map(): ResponseInterface
+    {
+        return $this->factory->createResponse()->withBody(
+            (new StreamFactory())->createStream(__FUNCTION__)
+        );
     }
 }

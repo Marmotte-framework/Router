@@ -38,7 +38,7 @@ use ReflectionMethod;
 use ReflectionNamedType;
 use RuntimeException;
 
-#[Service]
+#[Service('router.yml')]
 final class Router
 {
     private RouteNode $route_tree;
@@ -51,7 +51,7 @@ final class Router
     ) {
         $this->route_tree = new RouteNode('');
 
-        $classmap = ClassMapGenerator::createMap($this->config->controller_root);
+        $classmap = ClassMapGenerator::createMap($this->config->project_root . '/' . $this->config->controller_root);
 
         foreach ($classmap as $symbol => $_path) {
             $ref = new ReflectionClass($symbol);
@@ -99,15 +99,30 @@ final class Router
             throw new RouterException(sprintf('class or method don\'t exist: %s::%s', $class, $method));
         }
 
-        $components = array_filter(explode('/', $route), fn($str) => !empty($str));
-        if (empty($components)) {
-            throw new RouterException(sprintf('Route %s is not valid', $route));
+        if (empty($route)) {
+            throw new RouterException('Route is not valid');
         }
+        $components = array_filter(explode('/', $route), static fn($str) => !empty($str));
 
-        $route_node = new RouteNode(array_pop($components));
+        $components = array_map(static fn($str) => '/' . $str, $components);
+        if (empty($components)) {
+            $components[] = '/';
+        }
+        $route_node = new RouteNode(array_pop($components), [], $class, $method);
         if (!$this->route_tree->addSubRoute($components, $route_node)) {
             throw new RouterException(sprintf('Fail to add route %s', $route));
         }
+    }
+
+    public function dumpRoutes(): string
+    {
+        $result = $this->route_tree->dump();
+
+        // Remove first line
+        $routes = explode("\n", $result);
+        array_shift($routes);
+
+        return implode("\n", $routes);
     }
 
     /**
@@ -117,7 +132,11 @@ final class Router
     public function route(string $route): void
     {
         $components = array_filter(explode('/', $route), fn($str) => !empty($str));
-        $handler    = $this->route_tree->findHandler($components);
+        $components = array_map(static fn($str) => '/' . $str, $components);
+        if (empty($components)) {
+            $components[] = '/';
+        }
+        $handler = $this->route_tree->findHandler($components);
 
         if ($handler === null) {
             $this->emitter->emit(
@@ -139,7 +158,7 @@ final class Router
             throw new RouterException(sprintf('Fail to get args of method %s::%s', $controller_name, $handler['method']));
         }
 
-        $response = $method_ref->invoke($controller, $args);
+        $response = $method_ref->invoke($controller, ...$args);
         if (!$response instanceof ResponseInterface) {
             throw new RouterException(sprintf('Route %s not returns a Response', $route));
         }
@@ -162,7 +181,7 @@ final class Router
             return null;
         }
 
-        return $class->newInstance($args);
+        return $class->newInstance(...$args);
     }
 
     /**

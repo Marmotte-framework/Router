@@ -29,7 +29,7 @@ namespace Marmotte\Router\Router;
 
 final class RouteNode
 {
-    private const VARIABLE_ROUTE = '/^\{.*}$/';
+    private const VARIABLE_ROUTE = '/^\/\{.*}$/';
 
     public readonly bool $is_variable;
     /**
@@ -39,7 +39,7 @@ final class RouteNode
 
     /**
      * @param array<string, RouteNode> $sub_routes
-     * @param class-string|null        $class
+     * @param class-string|null $class
      */
     public function __construct(
         public readonly string $route,
@@ -90,7 +90,7 @@ final class RouteNode
     }
 
     /**
-     * @param string[]              $routes
+     * @param string[] $routes
      * @param array<string, string> $args
      * @return ?array{
      *     class: class-string,
@@ -121,10 +121,10 @@ final class RouteNode
 
         // Else, look if variable routes match
         foreach ($this->variable_sub_routes as $sub_route) {
-            $route_name = substr($sub_route->route, 1, strlen($sub_route->route) - 2);
+            $route_name = substr($sub_route->route, 2, strlen($sub_route->route) - 3);
             if (($handler = $sub_route->findHandler($routes, [
                     ...$args,
-                    $route_name => $route,
+                    $route_name => substr($route, 1),
                 ])) !== null) {
                 return $handler;
             }
@@ -132,5 +132,20 @@ final class RouteNode
 
         // No route found
         return null;
+    }
+
+    public function dump(string $base = ''): string
+    {
+        $base   = $base . $this->route;
+        $result = $base . ' -> ' . ($this->class ?? 'null') . '::' . ($this->method ?? 'null') . "\n";
+
+        foreach ($this->variable_sub_routes as $sub_route) {
+            $result .= $sub_route->dump($base);
+        }
+        foreach ($this->sub_routes as $sub_route) {
+            $result .= $sub_route->dump($base);
+        }
+
+        return $result;
     }
 }

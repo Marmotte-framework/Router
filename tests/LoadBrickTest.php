@@ -49,7 +49,7 @@ class LoadBrickTest extends TestCase
         );
         $brick_loader->loadFromDir(__DIR__ . '/../src');
         $brick_loader->loadBricks();
-        $service_manager = $brick_manager->initialize(__DIR__ . '/../src', __DIR__ . '/Fixtures');
+        $service_manager = $brick_manager->initialize(__DIR__ . '/Fixtures', __DIR__ . '/Fixtures');
 
         $bricks = $brick_manager->getBricks();
         self::assertCount(2, $bricks);

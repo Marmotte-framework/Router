@@ -25,37 +25,42 @@
 
 declare(strict_types=1);
 
-namespace Marmotte\Router\Controller;
+namespace Marmotte\Router\Fixtures;
 
-use Marmotte\Brick\Services\Service;
 use Marmotte\Http\Response\ResponseFactory;
 use Marmotte\Http\Stream\StreamFactory;
+use Marmotte\Router\Router\Route;
 use Psr\Http\Message\ResponseInterface;
 
-#[Service]
-final class ErrorResponseFactory
+#[Route('blog')]
+final class BlogController
 {
     public function __construct(
-        private readonly ResponseFactory $response_factory,
+        private readonly ResponseFactory $factory,
     ) {
     }
 
-    public function createError(int $code, string $reason = ''): ResponseInterface
+    #[Route('{id}')]
+    public function article(string $id): ResponseInterface
     {
-        $response = $this->response_factory->createResponse($code, $reason);
+        return $this->factory->createResponse()->withBody(
+            (new StreamFactory())->createStream("Article $id")
+        );
+    }
 
-        $body = "<!DOCTYPE html>
-<html lang='en'>
-<head>
-<title>Error $code</title>
-</head>
-<body>
-<h1>Sorry, there is an error $code</h1>
-<h3>{$response->getReasonPhrase()}</h3>
-</body>
-</html>
-";
+    #[Route('/tag')]
+    public function tag(): ResponseInterface
+    {
+        return $this->factory->createResponse()->withBody(
+            (new StreamFactory())->createStream(__FUNCTION__)
+        );
+    }
 
-        return $response->withBody((new StreamFactory())->createStream($body));
+    #[Route('{id}/comments')]
+    public function articleComments(string $id): ResponseInterface
+    {
+        return $this->factory->createResponse()->withBody(
+            (new StreamFactory())->createStream("Article $id comments")
+        );
     }
 }

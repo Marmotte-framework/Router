@@ -1,7 +1,7 @@
 {
     "name": "marmotte/router",
     "description": "Main Router of Marmotte",
-    "type": "library",
+    "type": "marmotte-brick",
     "keywords": [
         "marmotte",
         "framework",

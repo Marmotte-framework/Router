@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.0.2
+
+- Change default controller root to ''
+
 ## v1.0.1
 
 *2023-05-03*

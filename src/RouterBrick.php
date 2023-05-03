@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-namespace Marmotte\Router\Router;
+namespace Marmotte\Router;
 
 use Marmotte\Brick\Brick;
 

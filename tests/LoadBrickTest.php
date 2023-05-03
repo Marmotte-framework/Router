@@ -47,12 +47,14 @@ class LoadBrickTest extends TestCase
             $brick_manager,
             new CacheManager(mode: Mode::TEST)
         );
-        $brick_loader->loadFromDir(__DIR__ . '/../src');
+        $brick_loader->loadFromDir(__DIR__ . '/../src', 'marmotte/router');
         $brick_loader->loadBricks();
         $service_manager = $brick_manager->initialize(__DIR__ . '/Fixtures', __DIR__ . '/Fixtures');
 
         $bricks = $brick_manager->getBricks();
         self::assertCount(2, $bricks);
+        self::assertNotNull($brick_manager->getBrick('marmotte/router'));
+        self::assertNotNull($brick_manager->getBrick('marmotte/http'));
 
         self::assertTrue($service_manager->hasService(Router::class));
         self::assertTrue($service_manager->hasService(Emitter::class));

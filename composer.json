@@ -1,7 +1,7 @@
 {
     "name": "marmotte/router",
     "description": "Main Router of Marmotte",
-    "type": "library",
+    "type": "marmotte-brick",
     "keywords": [
         "marmotte",
         "framework",
@@ -33,7 +33,10 @@
     "autoload": {
         "psr-4": {
             "Marmotte\\Router\\": "src/"
-        }
+        },
+        "exclude-from-classmap": [
+            "tests/"
+        ]
     },
     "autoload-dev": {
         "psr-4": {

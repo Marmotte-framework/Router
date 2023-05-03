@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.0.1
+
+*2023-05-03*
+
+- Move class `RouterBrick` to src root
+- Fix type of composer package
+
 ## v1.0.0
 
 *2023-04-30*

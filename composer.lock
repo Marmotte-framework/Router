@@ -152,16 +152,16 @@
         },
         {
             "name": "marmotte/brick",
-            "version": "v1.2.3",
+            "version": "v1.2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Marmotte-framework/Brick.git",
-                "reference": "767bf5f8444494a62f3b6d074fab99a21ccce009"
+                "reference": "fb8c5938dcee55ca32caba5e8178557860d7da3d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Marmotte-framework/Brick/zipball/767bf5f8444494a62f3b6d074fab99a21ccce009",
-                "reference": "767bf5f8444494a62f3b6d074fab99a21ccce009",
+                "url": "https://api.github.com/repos/Marmotte-framework/Brick/zipball/fb8c5938dcee55ca32caba5e8178557860d7da3d",
+                "reference": "fb8c5938dcee55ca32caba5e8178557860d7da3d",
                 "shasum": ""
             },
             "require": {
@@ -201,7 +201,7 @@
             ],
             "support": {
                 "issues": "https://github.com/Marmotte-framework/Brick/issues",
-                "source": "https://github.com/Marmotte-framework/Brick/tree/v1.2.3"
+                "source": "https://github.com/Marmotte-framework/Brick/tree/v1.2.4"
             },
             "funding": [
                 {
@@ -209,7 +209,7 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2023-04-30T12:39:42+00:00"
+            "time": "2023-05-03T20:27:27+00:00"
         },
         {
             "name": "marmotte/http",

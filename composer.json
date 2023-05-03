@@ -33,7 +33,10 @@
     "autoload": {
         "psr-4": {
             "Marmotte\\Router\\": "src/"
-        }
+        },
+        "exclude-from-classmap": [
+            "tests/"
+        ]
     },
     "autoload-dev": {
         "psr-4": {

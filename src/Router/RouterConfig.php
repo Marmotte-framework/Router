@@ -60,7 +60,7 @@ final class RouterConfig extends ServiceConfig
     public static function defaultArray(): array
     {
         return [
-            'controller_root' => 'src',
+            'controller_root' => '',
         ];
     }
 }

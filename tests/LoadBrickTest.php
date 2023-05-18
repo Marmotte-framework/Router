@@ -52,9 +52,10 @@ class LoadBrickTest extends TestCase
         $service_manager = $brick_manager->initialize(__DIR__ . '/Fixtures', __DIR__ . '/Fixtures');
 
         $bricks = $brick_manager->getBricks();
-        self::assertCount(2, $bricks);
+        self::assertCount(3, $bricks);
         self::assertNotNull($brick_manager->getBrick('marmotte/router'));
         self::assertNotNull($brick_manager->getBrick('marmotte/http'));
+        self::assertNotNull($brick_manager->getBrick('marmotte/teng'));
 
         self::assertTrue($service_manager->hasService(Router::class));
         self::assertTrue($service_manager->hasService(Emitter::class));

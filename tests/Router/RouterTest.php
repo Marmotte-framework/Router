@@ -162,15 +162,30 @@ class RouterTest extends TestCase
     private static function getErrorResponse(int $code, string $reason): string
     {
         return "<!DOCTYPE html>
-<html lang='en'>
+<html lang=\"en\">
 <head>
-<title>Error $code</title>
+    <title>Error $code</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        div {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
 </head>
 <body>
-<h1>Sorry, there is an error $code</h1>
-<h3>$reason</h3>
+<div>
+    <h1>Error $code</h1>
+    <p>$reason</p>
+</div>
 </body>
-</html>
-";
+</html>";
     }
 }

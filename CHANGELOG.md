@@ -4,6 +4,7 @@
 
 - Use `nikic/fast-route` as internal router
 - Not emit body when HEAD
+- ErrorResponseFactory use a Teng template
 
 ## v1.0.2
 

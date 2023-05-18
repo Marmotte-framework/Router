@@ -38,7 +38,7 @@ final class Emitter
     {
     }
 
-    public function emit(ResponseInterface $response): void
+    public function emit(ResponseInterface $response, bool $with_body = true): void
     {
         $filename = null;
         $line     = null;
@@ -48,7 +48,9 @@ final class Emitter
 
         $this->emitHeaders($response);
         $this->emitStatus($response);
-        $this->emitBody($response);
+        if ($with_body) {
+            $this->emitBody($response);
+        }
     }
 
     private function emitHeaders(ResponseInterface $response): void

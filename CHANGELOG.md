@@ -3,6 +3,7 @@
 ## v1.1.0
 
 - Use `nikic/fast-route` as internal router
+- Not emit body when HEAD
 
 ## v1.0.2
 

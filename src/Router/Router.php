@@ -77,7 +77,6 @@ final class Router
             $method_attrs = $method->getAttributes(Route::class);
 
             if (!empty($method_attrs)) {
-                /** @var Route $route_attr */
                 $route_attr   = $method_attrs[0]->newInstance();
                 $method_route = $route_attr->route;
 
@@ -150,7 +149,7 @@ final class Router
                 $response = $this->error_response_factory->createError(500);
         }
 
-        $this->emitter->emit($response);
+        $this->emitter->emit($response, $http_method !== 'HEAD');
     }
 
     /**

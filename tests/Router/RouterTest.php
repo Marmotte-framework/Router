@@ -151,6 +151,12 @@ class RouterTest extends TestCase
                 'result' => "Article $id comments",
             ];
         }
+
+        yield 'It doesn\'t emit body when HEAD' => [
+            'route'  => '',
+            'method' => 'HEAD',
+            'result' => '',
+        ];
     }
 
     private static function getErrorResponse(int $code, string $reason): string

@@ -40,19 +40,19 @@ final class BlogController
     ) {
     }
 
-    #[Route('{id}')]
-    public function article(string $id): ResponseInterface
-    {
-        return $this->factory->createResponse()->withBody(
-            (new StreamFactory())->createStream("Article $id")
-        );
-    }
-
     #[Route('/tag')]
     public function tag(): ResponseInterface
     {
         return $this->factory->createResponse()->withBody(
             (new StreamFactory())->createStream(__FUNCTION__)
+        );
+    }
+
+    #[Route('{id}')]
+    public function article(string $id): ResponseInterface
+    {
+        return $this->factory->createResponse()->withBody(
+            (new StreamFactory())->createStream("Article $id")
         );
     }
 

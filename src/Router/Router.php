@@ -28,6 +28,8 @@ declare(strict_types=1);
 namespace Marmotte\Router\Router;
 
 use Composer\ClassMapGenerator\ClassMapGenerator;
+use FastRoute\Dispatcher;
+use FastRoute\RouteCollector;
 use Marmotte\Brick\Services\Service;
 use Marmotte\Brick\Services\ServiceManager;
 use Marmotte\Router\Controller\ErrorResponseFactory;
@@ -37,11 +39,12 @@ use ReflectionClass;
 use ReflectionMethod;
 use ReflectionNamedType;
 use RuntimeException;
+use function FastRoute\simpleDispatcher;
 
 #[Service('router.yml')]
 final class Router
 {
-    private RouteNode $route_tree;
+    private readonly Dispatcher $dispatcher;
 
     public function __construct(
         private readonly RouterConfig         $config,
@@ -49,18 +52,18 @@ final class Router
         private readonly Emitter              $emitter,
         private readonly ErrorResponseFactory $error_response_factory,
     ) {
-        $this->route_tree = new RouteNode('');
+        $this->dispatcher = simpleDispatcher(function (RouteCollector $r) {
+            $classmap = ClassMapGenerator::createMap($this->config->project_root . '/' . $this->config->controller_root);
 
-        $classmap = ClassMapGenerator::createMap($this->config->project_root . '/' . $this->config->controller_root);
+            foreach ($classmap as $symbol => $_path) {
+                $ref = new ReflectionClass($symbol);
 
-        foreach ($classmap as $symbol => $_path) {
-            $ref = new ReflectionClass($symbol);
-
-            $this->getRoutesFromClass($ref);
-        }
+                $this->getRoutesFromClass($ref, $r);
+            }
+        });
     }
 
-    private function getRoutesFromClass(ReflectionClass $class): void
+    private function getRoutesFromClass(ReflectionClass $class, RouteCollector $r): void
     {
         $class_attrs = $class->getAttributes(Route::class);
 
@@ -78,7 +81,12 @@ final class Router
                 $method_route = $route_attr->route;
 
                 try {
-                    $this->addRouteHandler($base_route . '/' . $method_route, $class->getName(), $method->getName());
+                    $this->addRouteHandler(
+                        $base_route . '/' . $method_route,
+                        $class->getName(),
+                        $method->getName(),
+                        $r
+                    );
                 } catch (RouterException $e) {
                     throw new RuntimeException(previous: $e);
                 }
@@ -92,78 +100,76 @@ final class Router
      * @param class-string $class
      * @throws RouterException
      */
-    public function addRouteHandler(string $route, string $class, string $method): void
+    private function addRouteHandler(string $route, string $class, string $method, RouteCollector $r): void
     {
-        // Check that $class and $methods exists
         if (!class_exists($class) || !method_exists($class, $method)) {
             throw new RouterException(sprintf('class or method don\'t exist: %s::%s', $class, $method));
         }
 
-        if (empty($route)) {
-            throw new RouterException('Route is not valid');
-        }
-        $components = array_filter(explode('/', $route), static fn($str) => !empty($str));
-
-        $components = array_map(static fn($str) => '/' . $str, $components);
-        if (empty($components)) {
-            $components[] = '/';
-        }
-        $route_node = new RouteNode(array_pop($components), [], $class, $method);
-        if (!$this->route_tree->addSubRoute($components, $route_node)) {
-            throw new RouterException(sprintf('Fail to add route %s', $route));
-        }
-    }
-
-    public function dumpRoutes(): string
-    {
-        $result = $this->route_tree->dump();
-
-        // Remove first line
-        $routes = explode("\n", $result);
-        array_shift($routes);
-
-        return implode("\n", $routes);
+        $r->addRoute('*', $this->cleanRoute($route), [$class, $method]);
     }
 
     /**
      * Call handler for route $route
-     * @throws RouterException
      */
     public function route(string $route): void
     {
-        $components = array_filter(explode('/', $route), fn($str) => !empty($str));
-        $components = array_map(static fn($str) => '/' . $str, $components);
-        if (empty($components)) {
-            $components[] = '/';
-        }
-        $handler = $this->route_tree->findHandler($components);
+        $dispatch = $this->dispatcher->dispatch('*', $this->cleanRoute($route));
 
-        if ($handler === null) {
-            $this->emitter->emit(
-                $this->error_response_factory->createError(404)
-            );
-            return;
-        }
-
-        $controller_name = $handler['class'];
-        $controller_ref  = new ReflectionClass($controller_name);
-        $controller      = $this->initController($controller_ref, $handler['args']);
-        if ($controller === null) {
-            throw new RouterException(sprintf('Fail to construct class %s', $controller_name));
-        }
-
-        $method_ref = $controller_ref->getMethod($handler['method']);
-        $args       = $this->getArgsForMethod($method_ref, $handler['args']);
-        if ($args === null) {
-            throw new RouterException(sprintf('Fail to get args of method %s::%s', $controller_name, $handler['method']));
-        }
-
-        $response = $method_ref->invoke($controller, ...$args);
-        if (!$response instanceof ResponseInterface) {
-            throw new RouterException(sprintf('Route %s not returns a Response', $route));
+        switch ($dispatch[0]) {
+            case Dispatcher::NOT_FOUND:
+                $response = $this->error_response_factory->createError(404);
+                break;
+            case Dispatcher::METHOD_NOT_ALLOWED:
+                /** @var string[] $methods */
+                $methods  = $dispatch[1];
+                $response = $this->error_response_factory
+                    ->createError(405)
+                    ->withHeader('Allow', $methods);
+                break;
+            case Dispatcher::FOUND:
+                /** @var array $handler */
+                $handler = $dispatch[1];
+                /** @var class-string $class */
+                $class = $handler[0];
+                /** @var string $method */
+                $method = $handler[1];
+                /** @var array<string, string> $args */
+                $args     = $dispatch[2];
+                $response = $this->handle($class, $method, $args);
+                break;
+            default:
+                $response = $this->error_response_factory->createError(500);
         }
 
         $this->emitter->emit($response);
+    }
+
+    /**
+     * @param class-string $class
+     * @param array<string, string> $route_args
+     * @throws RouterException
+     */
+    private function handle(string $class, string $method, array $route_args): ResponseInterface
+    {
+        $controller_ref = new ReflectionClass($class);
+        $controller     = $this->initController($controller_ref, $route_args);
+        if ($controller === null) {
+            throw new RouterException(sprintf('Fail to construct class %s', $class));
+        }
+
+        $method_ref = $controller_ref->getMethod($method);
+        $args       = $this->getArgsForMethod($method_ref, $route_args);
+        if ($args === null) {
+            throw new RouterException(sprintf('Fail to get args of method %s::%s', $class, $method));
+        }
+
+        $response = $method_ref->invoke($controller, ...$args);
+        if (!($response instanceof ResponseInterface)) {
+            throw new RouterException('Controller not returned a ResponseInterface');
+        }
+
+        return $response;
     }
 
     /**
@@ -212,5 +218,16 @@ final class Router
         }
 
         return $args;
+    }
+
+    private function cleanRoute(string $route): string
+    {
+        return implode(
+            '/',
+            array_filter(
+                explode('/', $route),
+                static fn(string $str) => !empty($str)
+            )
+        );
     }
 }

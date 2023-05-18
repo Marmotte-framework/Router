@@ -2,6 +2,8 @@
 
 ## v1.1.0
 
+- Use `nikic/fast-route` as internal router
+
 ## v1.0.2
 
 *2023-05-04*

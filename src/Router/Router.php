@@ -77,12 +77,14 @@ final class Router
             $method_attrs = $method->getAttributes(Route::class);
 
             if (!empty($method_attrs)) {
+                /** @var Route $route_attr */
                 $route_attr   = $method_attrs[0]->newInstance();
                 $method_route = $route_attr->route;
 
                 try {
                     $this->addRouteHandler(
                         $base_route . '/' . $method_route,
+                        $route_attr->methods,
                         $class->getName(),
                         $method->getName(),
                         $r
@@ -97,24 +99,30 @@ final class Router
     // _.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-.
 
     /**
+     * @param string[] $http_method
      * @param class-string $class
      * @throws RouterException
      */
-    private function addRouteHandler(string $route, string $class, string $method, RouteCollector $r): void
-    {
+    private function addRouteHandler(
+        string         $route,
+        array          $http_method,
+        string         $class,
+        string         $method,
+        RouteCollector $r,
+    ): void {
         if (!class_exists($class) || !method_exists($class, $method)) {
             throw new RouterException(sprintf('class or method don\'t exist: %s::%s', $class, $method));
         }
 
-        $r->addRoute('*', $this->cleanRoute($route), [$class, $method]);
+        $r->addRoute($http_method, $this->cleanRoute($route), [$class, $method]);
     }
 
     /**
      * Call handler for route $route
      */
-    public function route(string $route): void
+    public function route(string $route, string $http_method): void
     {
-        $dispatch = $this->dispatcher->dispatch('*', $this->cleanRoute($route));
+        $dispatch = $this->dispatcher->dispatch($http_method, $this->cleanRoute($route));
 
         switch ($dispatch[0]) {
             case Dispatcher::NOT_FOUND:

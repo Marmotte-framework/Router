@@ -56,11 +56,11 @@ class RouterTest extends TestCase
     /**
      * @dataProvider getTestRouteData
      */
-    public function testRoute(string $route, string $result): void
+    public function testRoute(string $route, string $method, string $result): void
     {
         ob_start();
         try {
-            self::$router->route($route);
+            self::$router->route($route, $method);
             $output = ob_get_clean();
         } catch (Throwable $e) {
             ob_end_clean();
@@ -74,42 +74,57 @@ class RouterTest extends TestCase
     {
         yield 'It can\'t find route /gbleskefe' => [
             'route'  => '/gbleskefe',
+            'method' => 'GET',
             'result' => self::getErrorResponse(404, 'Not Found'),
         ];
         yield 'It can find home route' => [
             'route'  => '/',
+            'method' => 'GET',
             'result' => 'home',
         ];
         yield 'It can find home route 2' => [
             'route'  => '',
+            'method' => 'GET',
             'result' => 'home',
+        ];
+        yield 'It can\'t find home route POST' => [
+            'route'  => '',
+            'method' => 'POST',
+            'result' => self::getErrorResponse(405, 'Method Not Allowed'),
         ];
         yield 'It can find contact route' => [
             'route'  => '/contact',
+            'method' => 'GET',
             'result' => 'contact',
         ];
         yield 'It can find contact route 2' => [
             'route'  => 'contact',
+            'method' => 'GET',
             'result' => 'contact',
         ];
         yield 'It can find about route' => [
             'route'  => '/about',
+            'method' => 'GET',
             'result' => 'about',
         ];
         yield 'It can find about route 2' => [
             'route'  => 'about',
+            'method' => 'GET',
             'result' => 'about',
         ];
         yield 'It can find map route' => [
             'route'  => '/map',
+            'method' => 'GET',
             'result' => 'map',
         ];
         yield 'It can find map route 2' => [
             'route'  => '/map/',
+            'method' => 'GET',
             'result' => 'map',
         ];
         yield 'It can find map route 3' => [
             'route'  => 'map/',
+            'method' => 'GET',
             'result' => 'map',
         ];
 
@@ -117,12 +132,14 @@ class RouterTest extends TestCase
             $id = rtrim(strtr(base64_encode(random_bytes(8)), '+/', '-_'), '=');
             yield "It can find blog/{id} route with id $id" => [
                 'route'  => "blog/$id",
+                'method' => 'GET',
                 'result' => "Article $id",
             ];
         }
 
         yield 'It can find blog/tag route' => [
             'route'  => 'blog/tag',
+            'method' => 'GET',
             'result' => 'tag',
         ];
 
@@ -130,6 +147,7 @@ class RouterTest extends TestCase
             $id = rtrim(strtr(base64_encode(random_bytes(8)), '+/', '-_'), '=');
             yield "It can find blog/{id}/comments route with id $id" => [
                 'route'  => "blog/$id/comments",
+                'method' => 'GET',
                 'result' => "Article $id comments",
             ];
         }

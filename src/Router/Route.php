@@ -32,9 +32,13 @@ use Attribute;
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_METHOD)]
 final class Route
 {
+    /**
+     * @param string[] $methods
+     */
     public function __construct(
         public readonly string $route,
         public readonly string $name = '',
+        public readonly array  $methods = ['GET'],
     ) {
     }
 }

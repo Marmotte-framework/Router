@@ -29,7 +29,8 @@ namespace Marmotte\Router\Controller;
 
 use Marmotte\Brick\Services\Service;
 use Marmotte\Http\Response\ResponseFactory;
-use Marmotte\Http\Stream\StreamFactory;
+use Marmotte\Teng\Engine;
+use Marmotte\Teng\Exceptions\TemplateNotFoundException;
 use Psr\Http\Message\ResponseInterface;
 
 #[Service]
@@ -37,6 +38,7 @@ final class ErrorResponseFactory
 {
     public function __construct(
         private readonly ResponseFactory $response_factory,
+        private readonly Engine          $engine,
     ) {
     }
 
@@ -44,18 +46,25 @@ final class ErrorResponseFactory
     {
         $response = $this->response_factory->createResponse($code, $reason);
 
-        $body = "<!DOCTYPE html>
-<html lang='en'>
-<head>
-<title>Error $code</title>
-</head>
-<body>
-<h1>Sorry, there is an error $code</h1>
-<h3>{$response->getReasonPhrase()}</h3>
-</body>
-</html>
-";
+        try {
+            $body = $this->engine->render("errors/error_$code.html.teng", [
+                'code'   => $code,
+                'reason' => $response->getReasonPhrase(),
+            ]);
+        } catch (TemplateNotFoundException) {
+            try {
+                $body = $this->engine->render('errors/error.html.teng', [
+                    'code'   => $code,
+                    'reason' => $response->getReasonPhrase(),
+                ]);
+            } catch (TemplateNotFoundException) {
+                $body = $this->engine->render(__DIR__ . '/error.html.teng', [
+                    'code'   => $code,
+                    'reason' => $response->getReasonPhrase(),
+                ]);
+            }
+        }
 
-        return $response->withBody((new StreamFactory())->createStream($body));
+        return $response->withBody($body);
     }
 }

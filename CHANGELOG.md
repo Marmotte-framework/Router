@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.2.0
+
+- Add `AbstractController`
+
 ## v1.1.0
 
 *2023-05-18*
